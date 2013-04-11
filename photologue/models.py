@@ -174,7 +174,7 @@ class Gallery(models.Model):
 
     def sample(self, count=None, public=True):
         """Return a sample of photos, ordered at random.
-        If the 'count' is not specified, it will return a number of photos 
+        If the 'count' is not specified, it will return a number of photos
         limited by the GALLERY_SAMPLE_SIZE setting.
         """
         if not count:
@@ -394,8 +394,11 @@ class ImageModel(models.Model):
             im = im.resize((int(x), int(y)), Image.ANTIALIAS).crop(box)
         else:
             if not new_width == 0 and not new_height == 0:
-                ratio = min(float(new_width) / cur_width,
-                            float(new_height) / cur_height)
+                # fill the blank with white
+                im.thumbnail((int(new_width), int(new_height)))
+                bg = Image.new('RGB', (new_width, new_height), color='white')
+                bg.paste(im, ((new_width-im.size[0])/2, (new_height-im.size[1])/2))
+                return bg
             else:
                 if new_width == 0:
                     ratio = float(new_height) / cur_height
